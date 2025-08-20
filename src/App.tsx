@@ -161,7 +161,7 @@ export default function App() {
       </main>
 
       {/* Footer (optional minimalist) */}
-     <footer className="px-6 py-4 text-center text-sm text-black italic">
+     <footer className="px-6 py-4 text-center text-lg font-bold italic text-black">
         "Gardening nurtures not just plants but also the soul, offering a quiet refuge."
      </footer>
     </div>
