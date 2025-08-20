@@ -161,9 +161,9 @@ export default function App() {
       </main>
 
       {/* Footer (optional minimalist) */}
-      <footer className="px-6 py-4 text-center text-sm text-black">
-        Theme colors: <span className="font-semibold">Green</span>, <span className="font-semibold">Yellow</span>, <span className="font-semibold">Orange</span>, <span className="font-semibold">Red</span>
-      </footer>
+     <footer className="px-6 py-4 text-center text-sm text-black italic">
+        "Gardening nurtures not just plants but also the soul, offering a quiet refuge."
+     </footer>
     </div>
   );
 }
