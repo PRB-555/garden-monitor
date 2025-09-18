@@ -18,7 +18,7 @@ function getBadge(next: Date): { text: "DUE" | "TODAY" | "UPCOMING"; color: stri
   d.setHours(0, 0, 0, 0);
 
   if (d < today) return { text: "DUE", color: "bg-redMain", textClass: "text-white" };
-  if (d.getTime() === today.getTime()) return { text: "TODAY", color: "bg-yellowMain", textClass: "text-black" }; // ✅ Yellow today
+  if (d.getTime() === today.getTime()) return { text: "TODAY", color: "bg-yellowMain", textClass: "text-black" };
   return { text: "UPCOMING", color: "bg-greenMain", textClass: "text-white" };
 }
 
@@ -41,6 +41,41 @@ export default function App() {
   // Persist plants
   useEffect(() => {
     saveData(STORAGE_KEY, plants);
+  }, [plants]);
+
+  // 🔔 Notification setup
+  useEffect(() => {
+    // Ask for permission once
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+
+    const interval = setInterval(() => {
+      if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Find due or today plants
+      const dueToday = plants.filter((plant) => {
+        const last = new Date(plant.lastWatered);
+        const next = new Date(last.getTime() + daysToMs(plant.frequency));
+        next.setHours(0, 0, 0, 0);
+
+        return next <= today; // includes DUE + TODAY
+      });
+
+      if (dueToday.length > 0) {
+        const names = dueToday.map((p) => p.name).join(", ");
+        const message =
+          dueToday.length === 1
+            ? `🌱 ${names} needs watering today.`
+            : `🌱 ${dueToday.length} plants need watering today: ${names}`;
+        new Notification("Garden Monitor", { body: message });
+      }
+    }, 60 * 60 * 1000); // 1 hour
+
+    return () => clearInterval(interval);
   }, [plants]);
 
   const addPlant = () => {
@@ -160,10 +195,10 @@ export default function App() {
         </div>
       </main>
 
-      {/* Footer (optional minimalist) */}
-     <footer className="px-6 py-4 text-center text-lg font-bold italic text-black">
+      {/* Footer */}
+      <footer className="px-6 py-4 text-center text-lg font-bold italic text-black">
         "Gardening nurtures not just plants but also the soul, offering a quiet refuge."
-     </footer>
+      </footer>
     </div>
   );
 }
